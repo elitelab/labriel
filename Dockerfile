@@ -1,7 +1,19 @@
-FROM eclipse-temurin:21
+FROM openjdk:21-jdk-slim AS builder
 
-WORKDIR /app
+WORKDIR /labriel
 
-COPY *.jar /app/
+COPY /src ./src
+COPY /gradle ./gradle
 
-CMD ["java","-cp","/app/runelab-bot-1.0-SNAPSHOT-all.jar", "io.runelab.MainKt"]
+COPY gradlew .
+COPY build.gradle.kts .
+COPY gradle.properties .
+COPY settings.gradle.kts .
+
+RUN ./gradlew shadowJar --no-daemon
+
+FROM gcr.io/distroless/java21-debian12
+
+COPY --from=builder /labriel/build/libs/labriel.jar /labriel.jar
+
+ENTRYPOINT ["java", "-jar", "labriel.jar"]

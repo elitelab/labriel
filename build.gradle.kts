@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "2.0.0"
     id("com.ncorti.ktfmt.gradle") version "0.19.0"
@@ -21,7 +23,6 @@ dependencies {
     implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
     implementation("org.flywaydb:flyway-core:10.16.0")
 
-
     implementation("org.javacord:javacord:3.8.0")
     testImplementation(kotlin("test"))
 }
@@ -29,6 +30,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
 }
@@ -43,5 +45,20 @@ sqldelight {
             packageName.set("io.runelab")
             schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
         }
+    }
+}
+
+tasks.withType<ShadowJar> {
+    archiveBaseName.set("labriel")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+
+    this.isZip64 = true
+    mergeServiceFiles()
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "io.runelab.MainKt"
     }
 }
