@@ -1,0 +1,18 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    discord_id TEXT NOT NULL,
+    activity_score INTEGER NOT NULL,
+    last_message_date TEXT
+, inactive_last_check TEXT);
+
+selectUser: SELECT * FROM users WHERE discord_id = ?;
+createUser: INSERT INTO users (date, discord_id, activity_score, last_message_date) VALUES(DATETIME('now'), ?, 0, DATETIME('now'));
+incrementScore: UPDATE users SET activity_score = activity_score + 1, last_message_date = DATETIME('now') WHERE discord_id = ?;
+getScore: SELECT activity_score FROM users WHERE discord_id = ?;
+deleteUser: DELETE FROM users WHERE discord_id = ?;
+getTopUsers: SELECT * FROM users ORDER BY activity_score DESC LIMIT 10;
+getInactiveUsers: SELECT * FROM users WHERE last_message_date < DATETIME('now', '-1 days');
+getInactiveUsersCheck: SELECT * FROM users WHERE inactive_last_check < DATETIME('now', '-1 days') AND last_message_date < DATETIME('now', '-7 days');
+updateInactiveCheckWithScore: UPDATE users SET inactive_last_check = DATETIME('now'), activity_score = ? WHERE id = ?;
+setScore: UPDATE users SET activity_score = ? WHERE discord_id = ?;
