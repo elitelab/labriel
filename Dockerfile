@@ -12,7 +12,7 @@ COPY settings.gradle.kts .
 
 RUN ./gradlew shadowJar --no-daemon
 
-FROM gcr.io/distroless/java21-debian12
+FROM openjdk:21-jdk-slim
 
 COPY --from=builder /labriel/build/libs/labriel.jar /labriel.jar
 
